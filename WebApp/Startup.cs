@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
+using WebApp.Core.Constants;
+using WebApp.Core.Mailing;
 
 namespace WebApp
 {
@@ -22,9 +16,12 @@ namespace WebApp
         {
             Configuration = configuration;
         }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<RabbitMqSettings>(Configuration.GetSection(SectionNames.RabbitMqSettings));
+            services.Configure<EmailSettings>(Configuration.GetSection(SectionNames.EmailSettings));
+
             services.AddControllers();
             services.AddSwaggerGen();
         }
@@ -35,7 +32,7 @@ namespace WebApp
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
